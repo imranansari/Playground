@@ -1,0 +1,6 @@
+- Determine swimming pool length from photo
+- Held at eye level
+- Standing a edge of pool
+- Pool image hits top and bottom of screen
+- Accelerometer for angle measurement
+- Pythagoras and trigonometry the rest out

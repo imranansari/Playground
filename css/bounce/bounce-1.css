@@ -1,0 +1,18 @@
+body {
+	background-image: url( floor.jpg );
+	background-size: 100% 100%;
+	cursor: default;
+	margin: 0px;
+	padding: 0px;
+}
+
+#ball {
+	position: absolute;	
+	top: 10px;
+	visibility: hidden;
+}
+
+.jack {
+	position: absolute;
+	visibility: hidden;	
+}
