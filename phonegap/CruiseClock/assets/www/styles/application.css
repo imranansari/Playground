@@ -1,0 +1,12 @@
+@font-face {
+	font-family: DroidSans;
+	src: url( '../DroidSans.ttf' );
+}
+
+body {
+	background-color: #CCC;	
+	cursor: default;
+	overflow: hidden;
+	
+	-webkit-user-select: none;
+}
