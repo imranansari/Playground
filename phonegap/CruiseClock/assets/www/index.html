@@ -20,6 +20,7 @@ var SWIPE_MAX = 100;
 var SWIPE_RIGHT = 'right';
 
 var index = null;
+var leaving = null;
 var months = [
 	'Jan', 'Feb', 'Mar', 'Apr',
 	'May', 'Jun', 'Jul', 'Aug',
@@ -28,6 +29,69 @@ var months = [
 var out = null;
 var start = null;
 var touch = null;
+
+function increase( field )
+{
+	var today = null;
+	
+	today = new Date();
+	
+	switch( field )
+	{
+		case 'month':
+			leaving.setMonth( leaving.getMonth() + 1 );
+			break;
+	}
+}
+
+function decrease( field )
+{
+	
+}
+
+function populate()
+{
+	var element = null;
+
+	if( window.localStorage.getItem( 'debarkation' ) == null )
+	{
+		leaving = new Date();
+		leaving.setHours( leaving.getHours() + 1 );		
+	} else {
+		leaving = new Date( window.localStorage.getItem( 'debarkation' ).getTime() );	
+	}
+			
+	element = document.querySelector( '#month span' );
+	element.innerHTML = months[leaving.getMonth()];
+	
+	element = document.querySelector( '#date span' );
+	element.innerHTML = leaving.getDate();
+	
+	element = document.querySelector( '#year span' );
+	element.innerHTML = leaving.getFullYear();				
+	
+	element = document.querySelector( '#hour span' );
+	element.innerHTML = leaving.getHours() - 12;
+	
+	element = document.querySelector( '#minute span' );
+	element.innerHTML = leaving.getMinutes();				
+	
+	element = document.querySelector( '#meridian' );
+	
+	clock = window.getComputedStyle( element, null ).getPropertyValue( 'background-image' );
+	
+	if( leaving.getHours() > 11 )
+	{
+		clock = clock.replace( 'am', 'pm' );	
+	} else {
+		clock = clock.replace( 'pm', 'am' );				
+	}
+	
+	element.style.setProperty( 'background-image', clock );			
+	
+	element = document.querySelector( '#dialog' );
+	element.style.visibility = 'visible';	
+}
 
 function swipe( direction )
 {
@@ -71,7 +135,31 @@ function swipe( direction )
 	}
 }
 
-function doDeviceReady() {;}
+function doBackButton()
+{
+	var dialog = null;
+	var menu = null;
+	
+	dialog = document.querySelector( '#dialog' );
+	
+	if( window.getComputedStyle( dialog, null ).getPropertyValue( 'visibility' ) == 'visible' )
+	{
+		dialog.style.setProperty( 'visibility', 'hidden' );
+		return;
+	}
+	
+	menu = document.querySelector( '#menu' );
+	
+	if( window.getComputedStyle( menu, null ).getPropertyValue( 'bottom' ) == '0px' )
+	{
+		menu.style.webkitTransition = 'bottom 0.60s linear';
+		menu.addEventListener( 'webkitTransitionEnd', doMenuTransition );					
+		menu.style.setProperty( 'bottom', '-110px' );
+		return;	
+	}
+	
+	navigator.app.exitApp();
+}
 
 function doButtonEnd( evt )
 {
@@ -97,87 +185,18 @@ function doButtonStart( evt )
 	this.style.setProperty( 'background-image', change );
 }
 
+function doDeviceReady() 
+{
+	document.addEventListener( 'menubutton', doMenuButton );
+	document.addEventListener( 'backbutton', doBackButton );	
+}
+
 function doDialogCancel()
 {
 	var dialog = null;
 	
 	dialog = document.querySelector( '#dialog' );
 	dialog.style.visibility = 'hidden';	
-}
-
-function doLoad()
-{
-	var buttons = null;
-	var clock = null;
-	var gestures = null;
-	var panel = null;
-	var pictures = null;	
-	var scenes = null;
-	
-	document.addEventListener( 'deviceready', doDeviceReady );	
-	
-	touch = ( 'ontouchstart' in document.documentElement ) ? true : false;
-		
-	scenes = document.querySelector( '#scenes' );
-	scenes.style.left = ( 0 - window.outerWidth ) + 'px';
-	scenes.style.width = ( window.outerWidth * 3 ) + 'px';
-	scenes.style.height = window.outerHeight + 'px';	
-	
-	pictures = document.querySelectorAll( '#scenes img' );
-	index = Math.floor( Math.random() * pictures.length );	
-	
-	for( var i = 0; i< pictures.length; i++ )
-	{
-		pictures[i].style.width = window.outerWidth + 'px';
-		pictures[i].style.height = window.outerHeight + 'px';
-		pictures[i].style.left = window.outerWidth + 'px';
-		
-		if( i == index )
-		{	
-			pictures[i].style.opacity = 1;
-		}
-	}
-	
-	clock = document.querySelector( '#clock' );
-	clock.style.left = Math.round( ( window.outerWidth - clock.scrollWidth ) / 2 ) + 'px';
-	
-	panel = document.querySelector( '#panel' );
-	panel.style.left = Math.round( ( window.outerWidth - panel.scrollWidth ) / 2 ) + 'px';
-	panel.style.top = Math.round( ( window.outerHeight - panel.scrollHeight ) / 2 ) + 'px';		
-	
-	gestures = document.querySelector( '#gestures' );
-	gestures.addEventListener( touch ? 'touchstart' : 'mousedown', doGestureStart );
-
-	buttons = document.querySelectorAll( '.increase' );
-	
-	for( var b = 0; b < buttons.length; b++ )
-	{
-		buttons[b].addEventListener( touch ? 'touchstart' : 'mousedown', doStepperStart );
-		buttons[b].addEventListener( touch ? 'touchend' : 'mouseup', doStepperEnd );	
-	}
-	
-	buttons = document.querySelectorAll( '.decrease' );
-	
-	for( b = 0; b < buttons.length; b++ )
-	{
-		buttons[b].addEventListener( touch ? 'touchstart' : 'mousedown', doStepperStart );
-		buttons[b].addEventListener( touch ? 'touchend' : 'mouseup', doStepperEnd );	
-	}
-	
-	buttons = document.querySelectorAll( '.button' );
-	
-	for( b = 0; b < buttons.length; b++ )
-	{
-		buttons[b].addEventListener( touch ? 'touchstart' : 'mousedown', doButtonStart );
-		buttons[b].addEventListener( touch ? 'touchend' : 'mouseup', doButtonEnd );	
-	}	
-	
-	buttons = document.querySelector( '#meridian' );	
-	buttons.addEventListener( touch ? 'touchstart' : 'mousedown', doMeridianStart );
-	buttons.addEventListener( touch ? 'touchend' : 'mouseup', doMeridianEnd );		
-
-	buttons = document.querySelector( '#cancel' );
-	buttons.addEventListener( touch ? 'touchstart' : 'mousedown', doDialogCancel );
 }
 
 function doGestureEnd( evt ) 
@@ -233,6 +252,154 @@ function doGestureStart( evt )
 	gestures.addEventListener( touch ? 'touchend' : 'mouseup', doGestureEnd );	
 }
 
+function doLoad()
+{
+	var buttons = null;
+	var clock = null;
+	var dialog = null;
+	var gestures = null;
+	var menu = null;
+	var panel = null;
+	var pictures = null;	
+	var scenes = null;
+	
+	document.addEventListener( 'deviceready', doDeviceReady );	
+	
+	touch = ( 'ontouchstart' in document.documentElement ) ? true : false;
+		
+	scenes = document.querySelector( '#scenes' );
+	scenes.style.left = ( 0 - window.outerWidth ) + 'px';
+	scenes.style.width = ( window.outerWidth * 3 ) + 'px';
+	scenes.style.height = window.outerHeight + 'px';	
+	
+	pictures = document.querySelectorAll( '#scenes img' );
+	index = Math.floor( Math.random() * pictures.length );	
+	
+	for( var i = 0; i< pictures.length; i++ )
+	{
+		pictures[i].style.width = window.outerWidth + 'px';
+		pictures[i].style.height = window.outerHeight + 'px';
+		pictures[i].style.left = window.outerWidth + 'px';
+		
+		if( i == index )
+		{	
+			pictures[i].style.opacity = 1;
+		}
+	}
+	
+	clock = document.querySelector( '#clock' );
+	clock.style.left = Math.round( ( window.outerWidth - clock.scrollWidth ) / 2 ) + 'px';
+	
+	panel = document.querySelector( '#panel' );
+	panel.style.left = Math.round( ( window.outerWidth - panel.scrollWidth ) / 2 ) + 'px';
+	panel.style.top = Math.round( ( window.outerHeight - panel.scrollHeight ) / 2 ) + 'px';		
+	
+	menu = document.querySelector( '#menu' );
+	menu.style.width = ( window.outerWidth - 6 ) + 'px';
+	menu.addEventListener( touch ? 'touchstart' : 'mousedown', doMenuStart );
+	menu.addEventListener( touch ? 'touchend' : 'mouseup', doMenuEnd );	
+	
+	gestures = document.querySelector( '#gestures' );
+	gestures.addEventListener( touch ? 'touchstart' : 'mousedown', doGestureStart );
+
+	buttons = document.querySelectorAll( '.increase' );
+	
+	for( var b = 0; b < buttons.length; b++ )
+	{
+		buttons[b].addEventListener( touch ? 'touchstart' : 'mousedown', doStepperStart );
+		buttons[b].addEventListener( touch ? 'touchend' : 'mouseup', doStepperEnd );	
+	}
+	
+	buttons = document.querySelectorAll( '.decrease' );
+	
+	for( b = 0; b < buttons.length; b++ )
+	{
+		buttons[b].addEventListener( touch ? 'touchstart' : 'mousedown', doStepperStart );
+		buttons[b].addEventListener( touch ? 'touchend' : 'mouseup', doStepperEnd );	
+	}
+	
+	buttons = document.querySelectorAll( '.button' );
+	
+	for( b = 0; b < buttons.length; b++ )
+	{
+		buttons[b].addEventListener( touch ? 'touchstart' : 'mousedown', doButtonStart );
+		buttons[b].addEventListener( touch ? 'touchend' : 'mouseup', doButtonEnd );	
+	}	
+	
+	buttons = document.querySelector( '#meridian' );	
+	buttons.addEventListener( touch ? 'touchstart' : 'mousedown', doMeridianStart );
+	buttons.addEventListener( touch ? 'touchend' : 'mouseup', doMeridianEnd );		
+
+	buttons = document.querySelector( '#cancel' );
+	buttons.addEventListener( touch ? 'touchend' : 'mouseup', doDialogCancel );	
+
+	window.localStorage.removeItem( 'debarkation' );
+
+	if( window.localStorage.getItem( 'debarkation' ) == null )
+	{
+		populate();
+	} else {
+		// Start countdown	
+		// Make clock visible
+	}
+}
+
+function doMenuButton()
+{
+	var dialog = null;
+	var menu = null;
+	
+	dialog = document.querySelector( '#dialog' );
+	
+	if( window.getComputedStyle( dialog, null ).getPropertyValue( 'visibility' ) != 'visible' )
+	{
+		menu = document.querySelector( '#menu' );
+		menu.style.webkitTransition = 'bottom 0.60s linear';
+		menu.addEventListener( 'webkitTransitionEnd', doMenuTransition );		
+		
+		if( window.getComputedStyle( menu, null ).getPropertyValue( 'bottom' ) == '0px' )
+		{
+			menu.style.setProperty( 'bottom', '-110px' );			
+		} else {
+			menu.style.setProperty( 'bottom', '0px' );			
+		}
+	}
+}
+
+function doMenuEnd( evt )
+{
+	var dialog = null;
+	var menu = null;
+	
+	evt.preventDefault();
+	
+	menu = document.querySelector( '#menu' );
+	menu.className = '';
+	menu.style.setProperty( 'bottom', '-110px' );
+	
+	dialog = document.querySelector( '#dialog' );
+	dialog.style.setProperty( 'visibility', 'visible' );	
+}
+
+function doMenuTransition()
+{
+	var menu = null;
+	
+	menu = document.querySelector( '#menu' );	
+	menu.style.webkitTransition = '';
+	menu.removeEventListener( 'webkitTransitionEnd', doMenuTransition );	
+}
+
+function doMenuStart( evt ) 
+{
+	var menu = null;
+	
+	evt.preventDefault();
+	
+	menu = document.querySelector( '#menu' );
+	menu.className = 'menu-down';	
+}
+
 function doMeridianEnd( evt )
 {
 	var change = null;
@@ -276,6 +443,13 @@ function doStepperStart( evt )
 	evt.preventDefault();
 	
 	this.src = this.src.replace( 'up', 'down' );
+	
+	if( this.className == 'increase' )
+	{
+		increase( this.parentElement.id );	
+	} else {
+		decrease( this.parentElement.id );	
+	}
 }
 
 function doTransitionEnd()
@@ -433,6 +607,10 @@ function doTransitionEnd()
         	Cancel
         </div>        
     </div>
+</div>
+
+<div id="menu">
+
 </div>
 
 </body>

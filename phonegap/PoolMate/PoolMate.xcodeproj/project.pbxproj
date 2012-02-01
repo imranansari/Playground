@@ -484,6 +484,7 @@
 				EFB28AB114CE3E5400C19BD8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
