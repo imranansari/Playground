@@ -3,119 +3,19 @@
 
 <title>Line Interpolation</title>
 
-<link rel="stylesheet" type="text/css" href="follow.css">
+<link href="interpolate.css" rel="stylesheet" type="text/css"/>
 
-<script src="jquery-1.4.4.min.js"></script>
-
-<script>
-var follow = null;
-
-$( document ).ready( function( e ) {
-
-	var canvas = document.getElementById( 'paths' );	
-	var context = null;
-	
-	if( canvas.getContext )
-	{
-		context = canvas.getContext( '2d' );
-		
-		$( '#paths' ).mousedown( function( evt ) {
-			follow = new Array();
-			context.clearRect( 0, 0, canvas.width, canvas.height );
-			
-			context.strokeStyle = '#FFFFFF';
-			context.lineWidth = 3;			
-			context.moveTo( evt.pageX, evt.pageY );
-			context.beginPath();					
-			
-			$( '#paths' ).mousemove( function( evt ) {
-				follow.push( {
-					x: evt.pageX,
-					y: evt.pageY	
-				} );
-							
-				context.lineTo( evt.pageX, evt.pageY );		
-				context.stroke();
-			} ).mouseup( function( evt ) {
-				var complete = new Array();
-				var steps = null;				
-				
-				$( '#paths' ).unbind( 'mousemove' );
-				$( '#paths' ).unbind( 'mouseup' );
-				
-				for( var p = 0; p < follow.length - 1; p++ )
-				{
-					complete.push( follow[p] );
-					steps = lineInterpolate( follow[p], follow[p + 1], 5 );
-					
-					for( var s = 0; s < steps.length; s++ )
-					{
-						complete.push( steps[s] );		
-					}
-				}
-					
-				for( var c = 0; c < complete.length; c++ )
-				{
-					context.fillStyle = 'rgba( 255, 0, 0, 0.5 )';
-					context.strokeStyle = 'rgba( 0, 255, 0, 0 )';
-					context.lineWidth = 1;			
-					
-					context.beginPath();
-					context.arc( complete[c].x, complete[c].y, 10, 0, Math.PI * 2, true );									
-					context.stroke();
-					context.fill();		
-				}
-			} );
-		} );
-	}	
-    
-	$( window ).resize( layout );
-	layout();	
-	
-} );
-
-function layout()
-{
-	$( '#paths' )
-		.attr( 'width', window.innerWidth )
-		.attr( 'height', window.innerHeight );	
-}
-
-function lineInterpolate( point1, point2, distance )
-{
-	var xabs = Math.abs( point1.x - point2.x );
-	var yabs = Math.abs( point1.y - point2.y );	
-	var xdiff = point2.x - point1.x;
-	var ydiff = point2.y - point1.y;
-
-	var length = Math.sqrt( ( Math.pow( xabs, 2 ) + Math.pow( yabs, 2 ) ) );
-	var steps = length / distance;
-	var xstep = xdiff / steps;
-	var ystep = ydiff / steps;
-
-	var newx = 0;
-	var newy = 0;
-	var result = new Array();
-
-	for( var s = 0; s < steps; s++ ) 
-	{
-		newx = point1.x + ( xstep * s );
-		newy = point1.y + ( ystep * s );
-            
-		result.push( {
-			x: newx,
-			y: newy	
-		} );
-	}
-
-	return result;  	
-}
-</script>
+<script src="interpolate.js" type="text/javascript"></script>
 
 </head>
-<body>
+<body onLoad="doLoad();">
 
-<canvas id="paths"></canvas>
+<div id="field">
+	<canvas id="paths"></canvas>
+</div>
+
+<img id="check" src="check.not.up.png" width="32" height="33"/>
+<div id="prompt">Interpolate captured mouse points</div>
 
 </body>
 </html>

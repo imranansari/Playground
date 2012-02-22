@@ -2,7 +2,7 @@
 // Web Socket server is publicly available
 var DISTANCE_CLOSE = '0px';
 var DISTANCE_OPEN = '94px';
-var ECHO_SERVER = 'ws://echo.websocket.org';
+var ECHO_SERVER = 'ws://echo.websocket.org?encoding=text';
 
 // Web Socket itself
 var socket = null;

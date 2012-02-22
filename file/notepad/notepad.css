@@ -50,10 +50,12 @@ body {
 }
 
 #select-form {
-	position: absolute; 
+	bottom: 0px;
 	left: 0px; 
+	opacity: 0;		
+	position: absolute; 
+	right: 0px;
 	top: 0px; 
-	opacity: 0;	
 }
 
 .button-skin {

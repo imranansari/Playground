@@ -202,7 +202,7 @@ function lineInterpolate( point1, point2, distance )
 	var newy = 0;
 	var result = new Array();
 
-	for( var s = 0; s < steps; s++ ) 
+	for( var s = 1; s < steps; s++ ) 
 	{
 		newx = point1.x + ( xstep * s );
 		newy = point1.y + ( ystep * s );

@@ -69,4 +69,14 @@ $( document ).ready( function() {
 		}
 	} );	
 	
+	$( window ).resize( doResize );
+	doResize()
 } );
+
+function doResize()
+{
+	var chrome = document.querySelector( '#chrome' );
+	
+	chrome.style.left = Math.round( ( document.body.scrollWidth - ( chrome.scrollWidth + 30 ) ) / 2 );
+	chrome.style.top = Math.round( ( document.body.scrollHeight - ( chrome.scrollHeight + 80 ) ) / 2 );		
+}
