@@ -1,0 +1,39 @@
+<html>
+<head>
+
+<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, target-densityDpi=device-dpi"/>
+
+<title>Screen Sizing</title>
+
+<style type="text/css">
+#report {
+	position: absolute;
+	text-align: center;	
+}
+</style>
+
+<script type="text/javascript">
+function doLoad()
+{
+	window.onresize = doResize;
+	doResize();	
+}
+
+function doResize()
+{
+	var report = null;
+	
+	report = document.querySelector( '#report' );
+	report.innerHTML = document.body.clientWidth + 'px<br/>' + document.body.clientHeight + 'px';	
+	report.style.left = Math.round( ( document.body.clientWidth - report.clientWidth ) / 2 );
+	report.style.top = Math.round( ( document.body.clientHeight - report.clientHeight ) / 2 );
+}
+</script>
+
+</head>
+<body onLoad="doLoad();">
+
+<div id="report"></div>
+
+</body>
+</html>
